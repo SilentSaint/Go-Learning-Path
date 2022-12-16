@@ -2,9 +2,11 @@ package main
 
 import (
 	// used for easier input and output
-	"bufio"
+
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
 )
 
 /*
@@ -14,16 +16,15 @@ func main() {
 	//make creates a new empty map
 	files := os.Args[1:]
 	counts := make(map[string]int)
-	if len(files) == 0 {
-		countLines(os.Stdin, counts)
-	} else {
-		for _, arg := range files {
-			f, err := os.Open(arg)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "dup2: %v\n", err)
-			}
-			countLines(f, counts)
-			f.Close()
+	for _, arg := range files {
+		/* Readfile reads the entire file into memory, and returns a byte slice */
+		data, err := ioutil.ReadFile(arg)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "dup3: %v\n", err)
+			continue
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			counts[line]++
 		}
 	}
 	for line, n := range counts {
@@ -33,9 +34,9 @@ func main() {
 	}
 }
 
-func countLines(f *os.File, counts map[string]int) {
-	input := bufio.NewScanner(f)
-	for input.Scan() {
-		counts[input.Text()]++
-	}
-}
+// func countLines(f *os.File, counts map[string]int) {
+// 	input := bufio.NewScanner(f)
+// 	for input.Scan() {
+// 		counts[input.Text()]++
+// 	}
+// }
